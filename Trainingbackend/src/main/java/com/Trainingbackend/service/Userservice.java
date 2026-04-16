@@ -19,6 +19,9 @@ public class Userservice implements Userserviceinter {
 	}
 	@Override
 	public User register(User user) {
+		 if (UserRepo.existsByEmail(user.getEmail())) {
+	            throw new RuntimeException("Email already exists");
+	        }
 		
 		return UserRepo.save(user);
 	}
