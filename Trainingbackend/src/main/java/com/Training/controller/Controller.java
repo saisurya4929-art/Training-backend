@@ -1,13 +1,18 @@
 package com.Training.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.Trainingbackend.entity.User;
-import com.Trainingbackend.service.Userserviceinter;
 import com.Trainingbackend.repository.UserRepository;
+import com.Trainingbackend.security.JwtUtil;
+import com.Trainingbackend.service.Userserviceinter;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -19,6 +24,12 @@ public class Controller {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
@@ -53,16 +64,38 @@ public class Controller {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
 
-        User existingUser = service.login(
-                user.getEmail(),
-                user.getPassword()
-        );
+        User existingUser = service.login(user.getEmail());
 
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid Email or Password");
+                    .body("Invalid Email");
         }
 
-        return ResponseEntity.ok(existingUser);
+        if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid Password");
+        }
+
+        String token = jwtUtil.generateToken(existingUser);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("id", existingUser.getId());
+        response.put("name", existingUser.getName());
+        response.put("email", existingUser.getEmail());
+        response.put("role", existingUser.getRole());
+        response.put("courses", existingUser.getCourses());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/student/profile")
+    public ResponseEntity<?> studentProfile() {
+        return ResponseEntity.ok("Student profile protected API");
+    }
+
+    @GetMapping("/admin/dashboard")
+    public ResponseEntity<?> adminDashboard() {
+        return ResponseEntity.ok("Admin dashboard protected API");
     }
 }
