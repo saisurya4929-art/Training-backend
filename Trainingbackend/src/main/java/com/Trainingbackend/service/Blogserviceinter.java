@@ -7,5 +7,10 @@ public interface Blogserviceinter {
 	Blog Saveblog(Blog blog);
 	
 	List<Blog>getAllBlogs();
+	
+	Blog updateBlog(Long id, Blog blog);
+	void deleteBlog(Long id);
+	
+	void deleteBulkBlog(List<Long> ids);
 
 }

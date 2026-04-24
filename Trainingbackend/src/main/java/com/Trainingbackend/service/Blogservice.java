@@ -25,4 +25,31 @@ private blogRepository repo;
 		return repo.findAll();
 	}
 
+	@Override
+	public Blog updateBlog(Long id, Blog blog) {
+		Blog existingBlog = repo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Blog not found"));
+
+		existingBlog.setTitle(blog.getTitle());
+		existingBlog.setCategory(blog.getCategory());
+		existingBlog.setImage(blog.getImage());
+		existingBlog.setDescription(blog.getDescription());
+
+		return repo.save(existingBlog);
+	
+	}
+
+	@Override
+	public void deleteBlog(Long id) {
+		repo.deleteById(id);
+		
+	}
+
+	@Override
+	public void deleteBulkBlog(List<Long> ids) {
+		repo.deleteAllById(ids);
+
+		
+	}
+
 }

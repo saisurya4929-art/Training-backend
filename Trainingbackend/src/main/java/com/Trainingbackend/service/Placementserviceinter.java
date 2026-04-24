@@ -8,6 +8,9 @@ public interface Placementserviceinter {
 	
 	Placement saveplacement(Placement placement);
 	List<Placement>gettAllPalcements();
+	
+	Placement updatePlacement(Long id, Placement placement);
+	void deletePlacement(Long id);
 
-
+	void deleteBulkPlacement(List<Long> ids);
 }

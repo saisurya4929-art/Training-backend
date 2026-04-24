@@ -29,10 +29,11 @@ public class WebSecurityConfig {
                 "/api/login",
                 "/api/register",
                 "/api/password/**",
-                "/api/courses",
-                "/api/blogs",
-                "/api/placements",
-                "/api/gallery"
+                "/api/courses/**",
+                "/api/blogs/**",
+                "/api/placements/**",
+                "/api/gallery/**",
+                "/uploads/**"
             ).permitAll()
             .anyRequest().authenticated();
 

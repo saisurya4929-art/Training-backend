@@ -22,4 +22,31 @@ public class Coursesservice implements Coursesserviceinter {
 		return coursesrepo.findAll();
 	}
 
+	@Override
+	public Courses updateCourse(Long id, Courses courses) {
+		Courses existingCourse = coursesrepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Course not found"));
+
+		existingCourse.setTitle(courses.getTitle());
+		existingCourse.setDescription(courses.getDescription());
+		existingCourse.setDuration(courses.getDuration());
+		existingCourse.setImageUrl(courses.getImageUrl());
+
+		return coursesrepo.save(existingCourse);
+	}
+
+	@Override
+	public void deleteCourse(Long id) {
+		
+		coursesrepo.deleteById(id);
+		
+	}
+
+	@Override
+	public void deleteBulkCourses(List<Long> ids) {
+		
+		coursesrepo.deleteAllById(ids);
+		
+	}
+
 }

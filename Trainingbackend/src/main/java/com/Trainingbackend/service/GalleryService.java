@@ -24,4 +24,39 @@ private GalleryRepository gallerepo;
 		return gallerepo.findAll();
 	}
 
+	@Override
+	public Gallery updateGallery(Long id, Gallery gallery) {
+		Gallery existingGallery = gallerepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Gallery not found"));
+
+		existingGallery.setName(gallery.getName());
+		existingGallery.setCategory(gallery.getCategory());
+
+		if (gallery.getImagename() != null) {
+			existingGallery.setImagename(gallery.getImagename());
+		}
+
+		if (gallery.getImageurl() != null) {
+			existingGallery.setImageurl(gallery.getImageurl());
+		}
+
+		return gallerepo.save(existingGallery);
+	
+	
+	}
+
+	@Override
+	public void deleteGallery(Long id) {
+		
+		gallerepo.deleteById(id);
+		
+	}
+
+	@Override
+	public void deleteBulkGallery(List<Long> ids) {
+	  
+		gallerepo.deleteAllById(ids);
+		
+	}
+
 }
