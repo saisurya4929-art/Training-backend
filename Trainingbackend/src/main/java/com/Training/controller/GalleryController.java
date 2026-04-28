@@ -1,26 +1,20 @@
 package com.Training.controller;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.Trainingbackend.entity.Gallery;
 import com.Trainingbackend.service.Galleryserviceinter;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 @RestController
 @RequestMapping("/api/gallery")
@@ -52,7 +46,13 @@ public class GalleryController {
             String fileName = UUID.randomUUID().toString() + "_" + originalFileName;
 
             File destinationFile = new File(uploadDir + File.separator + fileName);
-            image.transferTo(destinationFile);
+
+            try (InputStream inputStream = image.getInputStream()) {
+                Thumbnails.of(inputStream)
+                        .size(1200, 800)
+                        .outputQuality(0.75)
+                        .toFile(destinationFile);
+            }
 
             Gallery gallery = new Gallery();
             gallery.setName(title);
@@ -74,6 +74,7 @@ public class GalleryController {
     public List<Gallery> getAllGallery() {
         return galleryService.getAllGallery();
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateGallery(
             @PathVariable Long id,
@@ -96,7 +97,13 @@ public class GalleryController {
                 String fileName = UUID.randomUUID().toString() + "_" + originalFileName;
 
                 File destinationFile = new File(uploadDir + File.separator + fileName);
-                image.transferTo(destinationFile);
+
+                try (InputStream inputStream = image.getInputStream()) {
+                    Thumbnails.of(inputStream)
+                            .size(1200, 800)
+                            .outputQuality(0.75)
+                            .toFile(destinationFile);
+                }
 
                 gallery.setImagename(originalFileName);
                 gallery.setImageurl(fileName);
@@ -110,12 +117,12 @@ public class GalleryController {
             return ResponseEntity.badRequest().body("Update failed: " + e.getMessage());
         }
     }
+
     @DeleteMapping("/bulk-delete")
     public String bulkDeleteGallery(@RequestBody List<Long> ids) {
         galleryService.deleteBulkGallery(ids);
         return "Selected gallery images deleted successfully";
     }
-
 
     @DeleteMapping("/{id}")
     public String deleteGallery(@PathVariable Long id) {

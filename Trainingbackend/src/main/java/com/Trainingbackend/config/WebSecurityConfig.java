@@ -33,7 +33,9 @@ public class WebSecurityConfig {
                 "/api/blogs/**",
                 "/api/placements/**",
                 "/api/gallery/**",
-                "/uploads/**"
+                "/uploads/**",
+                "/api/admin/**",
+                "/api/enrollments/**"
             ).permitAll()
             .anyRequest().authenticated();
 

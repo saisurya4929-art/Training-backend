@@ -1,6 +1,7 @@
 package com.Training.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,7 @@ public class Controller {
         response.put("name", existingUser.getName());
         response.put("email", existingUser.getEmail());
         response.put("role", existingUser.getRole());
-        response.put("courses", existingUser.getCourses());
+        
 
         return ResponseEntity.ok(response);
     }
@@ -97,5 +98,24 @@ public class Controller {
     @GetMapping("/admin/dashboard")
     public ResponseEntity<?> adminDashboard() {
         return ResponseEntity.ok("Admin dashboard protected API");
+    }
+    @GetMapping("/admin/users")
+    public List<User> getAllUsers() {
+        return service.getAllUsers();
+    }
+
+    @PutMapping("/admin/users/{id}/role")
+    public User updateUserRole(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+
+        String role = body.get("role");
+        return service.updateUserRole(id, role);
+    }
+
+    @DeleteMapping("/admin/users/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        service.deleteUser(id);
+        return "User deleted successfully";
     }
 }

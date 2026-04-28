@@ -25,7 +25,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Public URLs
         if (path.equals("/api/login") ||
             path.equals("/api/register") ||
             path.startsWith("/api/password/") ||
@@ -33,6 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
             path.startsWith("/api/blogs") ||
             path.startsWith("/api/placements") ||
             path.startsWith("/api/gallery") ||
+            path.startsWith("/api/enrollments") ||
             path.startsWith("/uploads/")) {
 
             filterChain.doFilter(request, response);
