@@ -52,4 +52,33 @@ public class Enrollmentservice implements Enrollmentserviceinter {
     public List<Enrollment> getStudentCourses(Long studentId) {
         return enrollmentRepo.findByStudentId(studentId);
     }
-}
+
+	@Override
+	public Enrollment updateProgress(Long enrollmentId, int completedLessons, int totalLessons) {
+		Enrollment enrollment = enrollmentRepo.findById(enrollmentId)
+	            .orElseThrow(() -> new RuntimeException("Enrollment Not Found"));
+
+	    int progress = 0;
+
+	    if (totalLessons > 0) {
+	        progress = (completedLessons * 100) / totalLessons;
+	    }
+
+	    if (progress > 100) {
+	        progress = 100;
+	    }
+
+	    enrollment.setCompletedLessons(completedLessons);
+	    enrollment.setTotalLessons(totalLessons);
+	    enrollment.setProgress(progress);
+
+	    if (progress == 100) {
+	        enrollment.setStatus("COMPLETED");
+	    } else {
+	        enrollment.setStatus("ENROLLED");
+	    }
+
+	    return enrollmentRepo.save(enrollment);
+	}
+		
+	}

@@ -20,102 +20,93 @@ import com.Trainingbackend.service.Userserviceinter;
 @RequestMapping("/api")
 public class Controller {
 
-    @Autowired
-    private Userserviceinter service;
+	@Autowired
+	private Userserviceinter service;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@RequestBody User user) {
 
-        if (userRepository.existsByEmail(user.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Email already exists");
-        }
+		if (userRepository.existsByEmail(user.getEmail())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+		}
 
-        String password = user.getPassword();
+		String password = user.getPassword();
 
-        boolean validPassword =
-                password.length() >= 8 &&
-                password.matches(".*[A-Z].*") &&
-                password.matches(".*[a-z].*") &&
-                password.matches(".*[0-9].*") &&
-                password.matches(".*[@$!%*?&].*");
+		boolean validPassword = password.length() >= 8 && password.matches(".*[A-Z].*") && password.matches(".*[a-z].*")
+				&& password.matches(".*[0-9].*") && password.matches(".*[@$!%*?&].*");
 
-        if (!validPassword) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Password must be 8 characters and include uppercase, lowercase, number and special character");
-        }
+		if (!validPassword) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+					"Password must be 8 characters and include uppercase, lowercase, number and special character");
+		}
 
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("STUDENT");
-        }
+		if (user.getRole() == null || user.getRole().isEmpty()) {
+			user.setRole("STUDENT");
+		}
 
-        User savedUser = service.register(user);
-        return ResponseEntity.ok(savedUser);
-    }
+		User savedUser = service.register(user);
+		return ResponseEntity.ok(savedUser);
+	}
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody User user) {
 
-        User existingUser = service.login(user.getEmail());
+		User existingUser = service.login(user.getEmail());
 
-        if (existingUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid Email");
-        }
+		if (existingUser == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Email");
+		}
 
-        if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid Password");
-        }
+		if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Password");
+		}
 
-        String token = jwtUtil.generateToken(existingUser);
+		String token = jwtUtil.generateToken(existingUser);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("id", existingUser.getId());
-        response.put("name", existingUser.getName());
-        response.put("email", existingUser.getEmail());
-        response.put("role", existingUser.getRole());
-        
+		Map<String, Object> response = new HashMap<>();
+		response.put("token", token);
+		response.put("id", existingUser.getId());
+		response.put("name", existingUser.getName());
+		response.put("email", existingUser.getEmail());
+		response.put("role", existingUser.getRole());
 
-        return ResponseEntity.ok(response);
-    }
+		return ResponseEntity.ok(response);
+	}
 
-    @GetMapping("/student/profile")
-    public ResponseEntity<?> studentProfile() {
-        return ResponseEntity.ok("Student profile protected API");
-    }
+	@GetMapping("/student/profile")
+	public ResponseEntity<?> studentProfile() {
+		return ResponseEntity.ok("Student profile protected API");
+	}
 
-    @GetMapping("/admin/dashboard")
-    public ResponseEntity<?> adminDashboard() {
-        return ResponseEntity.ok("Admin dashboard protected API");
-    }
-    @GetMapping("/admin/users")
-    public List<User> getAllUsers() {
-        return service.getAllUsers();
-    }
+	@GetMapping("/admin/dashboard")
+	public ResponseEntity<?> adminDashboard() {
+		return ResponseEntity.ok("Admin dashboard protected API");
+	}
 
-    @PutMapping("/admin/users/{id}/role")
-    public User updateUserRole(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> body) {
+	@GetMapping("/admin/users")
+	public List<User> getAllUsers() {
+		return service.getAllUsers();
+	}
 
-        String role = body.get("role");
-        return service.updateUserRole(id, role);
-    }
+	@PutMapping("/admin/users/{id}/role")
+	public User updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> body) {
 
-    @DeleteMapping("/admin/users/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        service.deleteUser(id);
-        return "User deleted successfully";
-    }
+		String role = body.get("role");
+		return service.updateUserRole(id, role);
+	}
+
+	@DeleteMapping("/admin/users/{id}")
+	public String deleteUser(@PathVariable Long id) {
+		service.deleteUser(id);
+		return "User deleted successfully";
+	}
 }

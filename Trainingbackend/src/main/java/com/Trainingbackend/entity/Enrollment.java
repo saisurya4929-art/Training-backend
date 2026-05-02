@@ -25,6 +25,36 @@ public class Enrollment {
     @JoinColumn(name = "course_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Courses course;
+    
+    public int getProgress() {
+		return progress;
+	}
+
+	public void setProgress(int progress) {
+		this.progress = progress;
+	}
+
+	public int getCompletedLessons() {
+		return completedLessons;
+	}
+
+	public void setCompletedLessons(int completedLessons) {
+		this.completedLessons = completedLessons;
+	}
+
+	public int getTotalLessons() {
+		return totalLessons;
+	}
+
+	public void setTotalLessons(int totalLessons) {
+		this.totalLessons = totalLessons;
+	}
+
+	private int progress;
+
+    private int completedLessons;
+
+    private int totalLessons;
 
     public Enrollment() {
     }

@@ -8,4 +8,6 @@ public interface Enrollmentserviceinter {
     String enrollCourse(Long studentId, Long courseId);
 
     List<Enrollment> getStudentCourses(Long studentId);
+    
+    Enrollment updateProgress(Long enrollmentId, int completedLessons, int totalLessons);
 }

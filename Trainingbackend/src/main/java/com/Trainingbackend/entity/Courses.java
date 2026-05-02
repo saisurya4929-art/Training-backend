@@ -1,5 +1,6 @@
 package com.Trainingbackend.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,8 +15,10 @@ public class Courses {
 	private long id;
 	
 	private String title;
+	@Column(columnDefinition = "TEXT")
 	private String description;
 	private String duration;
+	@Column(name = "image_url", columnDefinition = "TEXT")
 	private String imageUrl;
     
 	public long getId() {

@@ -20,18 +20,20 @@ import com.Trainingbackend.service.Coursesservice;
 @RequestMapping("api/courses")
 @CrossOrigin(origins = "http://localhost:5173")
 public class CoursesController {
-  @Autowired
-  private Coursesservice courseser;
-	 
-  @PostMapping
-  public Courses addCourses(@RequestBody Courses courses) {
-	  return courseser.addcourses(courses);
-  }
-  @GetMapping
-  public List<Courses> getAllCourses() {
-      return courseser.getAllCourses();
-  }
-  @PutMapping("/{id}")
+	@Autowired
+	private Coursesservice courseser;
+
+	@PostMapping
+	public Courses addCourses(@RequestBody Courses courses) {
+		return courseser.addcourses(courses);
+	}
+
+	@GetMapping
+	public List<Courses> getAllCourses() {
+		return courseser.getAllCourses();
+	}
+
+	@PutMapping("/{id}")
 	public Courses updateCourse(@PathVariable Long id, @RequestBody Courses courses) {
 		return courseser.updateCourse(id, courses);
 	}
@@ -41,11 +43,11 @@ public class CoursesController {
 		courseser.deleteCourse(id);
 		return "Course deleted successfully";
 	}
-	
+
 	@DeleteMapping("/bulk-delete")
 	public String bulkDeleteCourses(@RequestBody List<Long> ids) {
 		courseser.deleteBulkCourses(ids);
 		return "Selected courses deleted successfully";
 	}
-	
+
 }
