@@ -1,6 +1,7 @@
 package com.Trainingbackend.security;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -8,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,11 +27,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		String path = request.getRequestURI();
 
+		if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		if (path.equals("/api/login") || path.equals("/api/register") || path.startsWith("/api/password/")
 				|| path.startsWith("/api/courses") || path.startsWith("/api/blogs")
 				|| path.startsWith("/api/placements") || path.startsWith("/api/gallery")
 				|| path.startsWith("/api/enrollments") || path.startsWith("/api/certificates")
-				|| path.startsWith("/api/reviews") || path.startsWith("/uploads/")) {
+				|| path.startsWith("/api/reviews") || path.startsWith("/api/upload") || path.startsWith("/uploads/")
+				|| path.startsWith("/student-uploads/")) {
 
 			filterChain.doFilter(request, response);
 			return;
@@ -45,7 +55,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		try {
 			jwtUtil.isTokenValid(token);
+
+			String email = jwtUtil.extractEmail(token);
+			String role = jwtUtil.extractRole(token);
+
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null,
+					Collections.singletonList(new SimpleGrantedAuthority(role)));
+
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+
 			filterChain.doFilter(request, response);
+
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().write("Invalid token");
